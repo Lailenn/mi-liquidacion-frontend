@@ -153,3 +153,64 @@
 @media screen and (max-width: 980px) {
   .mobile-summary-toggle { box-shadow: 0 -10px 0 2px var(--bg), 0 6px 14px #1b355c14; }
 }
+
+/* ===== Teléfonos ===== */
+@media screen and (max-width: 650px) {
+  /* Ayudas "?": el texto aparece abajo de la pantalla, sin ensanchar la página */
+  .help-tip::after { display: none; }
+  .help-tip:hover::after, .help-tip:focus::after { display: block; position: fixed; top: auto; bottom: 16px; left: 16px; right: 16px; width: auto; max-width: none; transform: none; font-size: 13.5px; padding: 12px 14px; }
+
+  /* Campos en una sola columna para que no se corten */
+  .fields { grid-template-columns: 1fr; gap: 16px; }
+  .field input, .field select { font-size: 16px; }
+
+  /* Registro de horas extras: fecha arriba, inicio y fin lado a lado */
+  .entry-fields { grid-template-columns: 1fr 1fr 32px; gap: 10px 8px; }
+  .entry-fields .field:first-child { grid-column: 1 / 3; grid-row: 1; }
+  .entry-fields .field:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .entry-fields .field:nth-child(3) { grid-column: 2; grid-row: 2; }
+  .entry-fields .remove-btn { grid-column: 3; grid-row: 1; align-self: end; height: 44px; }
+  .time-trigger { gap: 6px; padding: 0 9px; font-size: 14.5px; white-space: nowrap; }
+  .time-trigger svg:last-child { display: none; }
+  .time-trigger svg:first-child { width: 16px; height: 16px; }
+  .entry-meta { flex-wrap: wrap; }
+
+  /* Tabla de horas extras como tarjetas */
+  .table-scroll { overflow: visible; border: 0; }
+  .pending-table { min-width: 0; }
+  .pending-table thead { display: none; }
+  .pending-table, .pending-table tbody, .pending-table tr, .pending-table td { display: block; width: 100%; }
+  .pending-table tr { margin-bottom: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+  .pending-table tr.invalid-row { border-color: #f0c9c9; }
+  .pending-table td { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px dashed #edf0f6; text-align: right; }
+  .pending-table td:first-child { display: block; padding-top: 0; border-top: 0; text-align: left; font-weight: 700; color: var(--ink); }
+  .pending-table td:last-child { text-align: right; white-space: normal; }
+  .pending-table td:not(:first-child)::before { color: var(--muted); font-size: 12px; font-weight: 600; text-align: left; }
+  .pending-table td:nth-child(2)::before { content: 'Inicio'; }
+  .pending-table td:nth-child(3)::before { content: 'Fin'; }
+  .pending-table td:nth-child(4)::before { content: 'Tipo'; }
+  .pending-table td:nth-child(5)::before { content: 'Horas'; }
+  .pending-table td:nth-child(6)::before { content: 'Pago'; }
+  .pending-table td:nth-child(7)::before { content: 'Estado'; }
+  .pending-table td.table-empty { display: block; text-align: center; }
+  .pending-table td.table-empty::before { content: none; }
+
+  /* Tablas y cajas de cálculo */
+  .calc-box { padding: 13px 14px; }
+  .calc-box ul { padding-left: 16px; font-size: 13px; }
+  .caps-grid, .contribution-grid { grid-template-columns: 1fr; }
+  .bonus-amounts { grid-template-columns: 1fr 1fr; }
+  .breakdown td small { overflow-wrap: anywhere; }
+  .holiday-toolbar { grid-template-columns: 1fr 1fr; }
+
+  /* Botones inferiores cómodos para el dedo */
+  .panel-footer { position: sticky; bottom: 0; z-index: 20; background: #fff; box-shadow: 0 -6px 16px #1b355c12; }
+  .panel-footer .btn { min-height: 46px; }
+}
+@media screen and (max-width: 380px) {
+  .st-name { font-size: 9.5px; }
+  .st-dot { width: 24px; height: 24px; }
+  .time-trigger { font-size: 13.5px; padding: 0 7px; }
+  .time-trigger svg:first-child { display: none; }
+  .bonus-amounts { grid-template-columns: 1fr; }
+}
