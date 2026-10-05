@@ -1,0 +1,100 @@
+/* Paleta de colores.
+   Azul: color principal (botones, paso actual y selección).
+   Verde salvia: lo completado, los cálculos y los totales.
+   Arena: avisos, ayudas y etiquetas.
+   Grises cálidos: fondos, bordes y textos secundarios. */
+:root {
+  --blue: #3556a8;
+  --blue-dark: #253e78;
+  --blue-soft: #eef2fa;
+  --blue-line: #d6dff2;
+
+  --sage: #4e7d69;
+  --sage-dark: #2f5a49;
+  --sage-soft: #eef5f1;
+  --sage-line: #d3e4da;
+
+  --sand: #9c6b2a;
+  --sand-dark: #7d5420;
+  --sand-soft: #fbf5ea;
+  --sand-line: #ecdcbf;
+
+  --ink: #27303d;
+  --muted: #6b7280;
+  --line: #e5e4e0;
+  --bg: #f5f4f1;
+  --surface-soft: #f8f8f6;
+  --navy: #26324a;
+
+  /* Variables que ya usan los demás estilos */
+  --green: var(--blue);
+  --green-dark: var(--blue-dark);
+  --mint: var(--blue-soft);
+}
+
+body { background: var(--bg); color: var(--ink); }
+
+/* Encabezados de sección y tarjetas de pregunta: neutros, con acento azul fino */
+.section-label { background: var(--surface-soft) !important; border-color: var(--line) !important; color: var(--ink) !important; }
+.section-label svg { color: var(--sage) !important; }
+.question-card, .question-box.question-card { background: #fff !important; border-color: var(--line) !important; border-left-color: var(--blue) !important; }
+.question-card:focus-within { border-color: var(--blue-line) !important; }
+.question-symbol { background: var(--sage-soft) !important; border-color: var(--sage-line) !important; color: var(--sage) !important; }
+.question-caption { color: var(--sage) !important; }
+.question-prompt .question { color: var(--ink) !important; }
+.field .question-field-label { background: var(--surface-soft) !important; border-left-color: var(--sage) !important; color: var(--ink) !important; }
+
+/* Barra de pasos: completados en verde salvia, actual en azul */
+.st.is-done .st-dot { background: var(--sage); border-color: var(--sage); }
+.st.is-done::before { background: var(--sage); }
+.st.is-done .st-name { color: var(--sage-dark); }
+.st.is-done .st-state { color: var(--sage); }
+.st.is-done > button:hover { background: var(--sage-soft); }
+.st-card { background: var(--blue-soft); box-shadow: inset 0 0 0 1px var(--blue-line); }
+.step-header { border-color: var(--line); }
+
+/* Cálculos y totales en verde salvia */
+.calc-box { background: var(--sage-soft); border-color: var(--sage-line); }
+.calc-head { color: var(--sage-dark); }
+.calc-head svg { color: var(--sage); }
+.calc-box.amber { background: var(--sand-soft); border-color: var(--sand-line); }
+.calc-box.amber .calc-head { color: var(--sand-dark); }
+.row-formula { color: var(--sage); }
+.pending-total { background: var(--sage-soft) !important; color: var(--sage-dark) !important; }
+.pending-total small { color: var(--sage) !important; }
+.net-total { background: var(--sage-soft) !important; border-color: var(--sage-line) !important; }
+.net-total span { color: var(--sage-dark) !important; }
+.net-total small { color: var(--sage) !important; }
+.net-total strong { color: var(--sage-dark) !important; }
+.breakdown tr.gross td { background: var(--surface-soft); }
+.period-note { background: var(--sage-soft) !important; border-color: var(--sage-line) !important; color: var(--sage) !important; }
+.period-note strong { color: var(--sage-dark) !important; }
+.tier-table tr.on td { background: var(--sage-soft); color: var(--sage-dark); }
+
+/* Tarjetas informativas neutras */
+.contribution-grid > div, .bonus-result, .summary-bonus, .legal-caps, .worked-date-box, .example-note { background: #fff !important; border-color: var(--line) !important; }
+.bonus-result-head > span:first-child, .worked-date-box label, .record-count { color: var(--ink) !important; }
+.bonus-result p, .summary-bonus p, .example-note { color: var(--muted) !important; }
+.contribution-grid strong { color: var(--blue-dark) !important; }
+
+/* Avisos y ayudas en arena */
+.bonus-calendar { background: var(--sand-soft) !important; border-color: var(--sand-line) !important; }
+.bonus-calendar strong { color: var(--sand-dark) !important; }
+.bonus-calendar p { color: #7a6a55 !important; }
+.calendar-symbol { color: var(--sand) !important; background: #fff !important; }
+.notice.amber { background: var(--sand-soft); color: var(--sand-dark); }
+.notice.amber strong { color: var(--sand-dark); }
+.example-chip { background: var(--sand-soft) !important; color: var(--sand-dark) !important; }
+.help-tip { background: var(--sand-soft); color: var(--sand); }
+.help-tip::after { background: var(--ink); }
+.tip-card { border-top: 3px solid var(--sand-line) !important; }
+.tip-title svg { color: var(--sand) !important; }
+.saturday-note { color: var(--sand-dark); }
+
+/* Asuetos seleccionados en verde salvia */
+.holiday-option.selected { border-color: var(--sage-line) !important; background: var(--sage-soft) !important; }
+
+/* Resumen lateral: azul marino apagado */
+.snapshot { background: var(--navy) !important; border-color: #2f3c57 !important; }
+.mobile-summary-toggle { background: #fff !important; border-color: var(--line) !important; color: var(--ink) !important; }
+.mobile-summary-icon { background: var(--sage-soft) !important; color: var(--sage) !important; }

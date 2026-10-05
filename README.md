@@ -56,6 +56,7 @@ Constantes de clase: salario diario = salario mensual ÷ 30; proporcionales ÷ 3
 - `dist/formulas.js`: todas las fórmulas de la liquidación, numeradas y comentadas.
 - `dist/calculations.js`: utilidades de fechas y armado del resumen con cada fórmula.
 - `dist/time-picker.js`: selector de hora con botones y escritura manual.
+- `dist/theme.css`: paleta de colores (azul principal, verde salvia y arena).
 - `dist/improvements.css`: paso grande, ayudas "?", listas de hora y cajas de cálculo.
 - `dist/styles.css`: diseño responsive y estilos para impresión.
 - `dist/app.js`: navegación, formularios condicionales y vista previa del comprobante.
