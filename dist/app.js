@@ -39,15 +39,16 @@ function field(name,label,type='text',extra=''){return `<div class="field"><labe
 function questionHeader(id,title,symbol='info',caption='TU RESPUESTA'){return `<div class="question-prompt"><span class="question-symbol">${icon(symbol)}</span><div><span class="question-caption">${caption}</span><h3 class="question" id="${id}">${title}</h3></div></div>`;}
 function choice(name,value,label,description){const symbol=name==='termination'?(value==='despido'?'case':'exit'):value==='completas'?'leaf':value==='semana'?'calendar':'clock';return `<label class="choice ${data[name]===value?'checked':''}"><input type="radio" name="${name}" value="${value}" ${data[name]===value?'checked':''}><span class="choice-icon">${icon(symbol)}</span><span class="choice-copy"><strong>${label}</strong><small>${description}</small></span><span class="radio-dot" aria-hidden="true">${icon('check')}</span></label>`;}
 function brand(){return `<span class="brand-mark">${icon('file')}</span><span><span class="brand-name">Mi liquidación</span><span class="brand-sub" style="display:block">EL SALVADOR</span></span>`;}
-// Barra superior: botón para volver, el paso actual en grande y los pasos que faltan. Los pasos completados se ocultan.
+// Barra superior: todos los pasos en una fila. Los completados se ven con ✓ y permiten volver; el actual se muestra en grande.
 function stepHeader(){
  const s=steps[currentStep],prev=steps[currentStep-1];
- const next=steps[currentStep+1];
- const back=prev?`<button type="button" class="step-back" data-step="${currentStep-1}" aria-label="Volver al paso ${currentStep}: ${prev.name}">${icon('back')}<span>${prev.short}</span></button>`:'';
- const top=`<div class="step-top">${back}<span class="step-eyebrow">Paso <b>${currentStep+1}</b> de ${steps.length}</span><span class="step-upnext">${next?`<span class="step-upnext-word">Siguiente:</span> <b>${next.short}</b>${icon('chevron')}`:`${icon('check')}Último paso`}</span></div>`;
- const title=`<div class="step-current" aria-current="step"><span class="step-current-icon">${icon(s.icon)}</span><div><h2 tabindex="-1" id="step-heading">${s.title}</h2><p>${s.desc}</p></div></div>`;
- const track=`<ol class="step-track" aria-label="Progreso">${steps.map((x,i)=>`<li class="${i<currentStep?'is-done':i===currentStep?'is-active':''}"><span class="step-bar"></span>${i<currentStep?'':`<span class="step-label">${x.short}</span>`}</li>`).join('')}</ol>`;
- return top+title+track;
+ const item=(x,i)=>{
+  const num=String(i+1).padStart(2,'0');
+  if(i<currentStep)return `<li class="st is-done"><button type="button" data-step="${i}" aria-label="Paso ${i+1}: ${x.name}, completado. Volver a este paso"><span class="st-dot">${icon('check')}</span><span class="st-name">${x.short}</span><span class="st-state">Completado</span></button></li>`;
+  if(i>currentStep)return `<li class="st is-next"><div aria-label="Paso ${i+1}: ${x.name}, pendiente"><span class="st-dot">${num}</span><span class="st-name">${x.short}</span><span class="st-state">Pendiente</span></div></li>`;
+  return `<li class="st is-current" aria-current="step"><div class="st-card"><span class="st-icon">${icon(s.icon)}</span><div class="st-copy"><span class="step-badge">Paso ${i+1} de ${steps.length} · ${s.name}</span><h2 tabindex="-1" id="step-heading">${s.title}</h2><p>${s.desc}</p></div>${prev?`<button type="button" class="st-back" data-step="${i-1}" aria-label="Volver al paso ${i}: ${prev.name}">${icon('back')}Volver</button>`:''}</div></li>`;
+ };
+ return `<ol class="stepper">${steps.map(item).join('')}</ol>`;
 }
 function shell(){
  const oldWizard=document.querySelector('#wizard');
@@ -60,7 +61,7 @@ function shell(){
  document.querySelector('#app').innerHTML=`
  <div class="app-main"><header class="topbar"><a class="brand mobile-brand" href="#" data-home aria-label="Mi liquidación, volver al primer paso">${brand()}</a><div class="breadcrumb"><span>Prestaciones laborales</span>${icon('chevron')}<strong>Nueva liquidación</strong></div><span class="demo-tag">${icon('cap')}Proyecto académico</span></header>
  <main class="workspace" id="main"><div class="page-intro"><div><div class="eyebrow"><span></span>UN PASO A LA VEZ</div><h1>Tu liquidación laboral</h1><p>Completa tu información y recorre el detalle de tus prestaciones.</p></div><button class="example-button" type="button" id="load-example" title="Volver a cargar los datos de ejemplo">${icon('refresh')}Cargar ejemplo</button></div>
- <nav class="step-header" aria-label="Pasos del formulario">${stepHeader()}</nav>
+ <nav class="step-header stepper-wrap" aria-label="Pasos del formulario">${stepHeader()}</nav>
  <div class="content-grid"><form id="wizard" class="form-panel" data-current-step="${currentStep}" tabindex="0" aria-labelledby="step-heading" novalidate><div class="panel-body ${sameStep?'':'step-content'}"><div id="form-error" class="form-error" role="alert" hidden></div>${[stepWork,stepTermination,stepVacations,stepBonus,stepPending,stepSummary][currentStep]()}</div><footer class="panel-footer">${currentStep===0?`<span class="footer-meta">${icon('lock')}Información de ejemplo</span>`:`<button type="button" class="btn btn-ghost" id="previous">${icon('back')}Anterior</button>`}${currentStep<steps.length-1?`<button class="btn btn-primary" type="submit">${currentStep===steps.length-2?'Ver resumen':'Continuar'}</button>`:`<button type="button" class="btn btn-primary" id="preview-pdf">${icon('file')}Ver comprobante</button>`}</footer></form><aside class="right-column" id="aside" aria-label="Resumen de tus datos">${asideContent()}</aside></div>
  <footer class="workspace-footer"><span>${icon('shield')}Tus datos permanecen en esta sesión.</span><span class="footer-course">Proyecto académico · El Salvador · 2026</span></footer></main></div>
  <dialog id="report-dialog" class="report-dialog" aria-labelledby="dialog-title"><div class="dialog-bar"><strong id="dialog-title">Vista previa del comprobante</strong><div class="dialog-actions"><button type="button" class="btn btn-primary" id="print-pdf">${icon('download')}<span>Guardar PDF</span></button><button class="icon-button" id="close-dialog" aria-label="Cerrar vista previa" type="button">${icon('x')}</button></div></div><div id="report-preview"></div></dialog>`;

@@ -1,46 +1,60 @@
 /* Mejoras según indicaciones de clase: paso visible en grande, ayudas, horas por lista y fórmulas. */
 
-/* Barra superior: paso actual en grande, botón para volver y progreso. Los pasos completados no muestran su nombre. */
-.step-header { flex: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px; padding: 16px 22px 18px; border: 1px solid #e3e9f6; border-radius: 16px; background: #fff; box-shadow: 0 4px 20px #1b355c0a; }
-.step-top { display: flex; align-items: center; gap: 12px; min-height: 30px; }
-.step-back { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 8px; border: 1px solid #dbe3f5; border-radius: 999px; background: #fff; color: var(--green); font-size: 13px; font-weight: 600; }
-.step-back svg { width: 16px; height: 16px; }
-.step-back:hover { background: var(--mint); border-color: #c6d4f7; }
-.step-eyebrow { white-space: nowrap; color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; }
-.step-eyebrow b { font-size: 14px; }
-.step-upnext { display: inline-flex; white-space: nowrap; align-items: center; gap: 5px; margin-left: auto; color: var(--muted); font-size: 13px; }
-.step-upnext b { color: var(--ink); font-weight: 600; }
-.step-upnext svg { width: 15px; height: 15px; color: #2f7d5b; }
-.step-current { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.step-current-icon { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(145deg, #4a6fd0, var(--green)); color: #fff; box-shadow: 0 6px 14px #3156b52e; }
-.step-current-icon svg { width: 24px; height: 24px; }
-.step-current h2 { font-size: 24px; font-weight: 800; letter-spacing: -.6px; line-height: 1.2; color: var(--green-dark); }
-.step-current h2:focus { outline: none; }
-.step-current p { margin-top: 3px; color: var(--muted); font-size: 14px; }
-.step-track { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
-.step-track li { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
-.step-bar { height: 6px; border-radius: 99px; background: #e8edf7; }
-.step-track .is-done .step-bar { background: var(--green); }
-.step-track .is-active .step-bar { background: linear-gradient(90deg, var(--green) 55%, #9db3ea); }
-.step-label { overflow: hidden; color: #8b97ad; font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
-.step-track .is-active .step-label { color: var(--green); font-weight: 700; }
-@media (max-width: 650px) {
-  .step-header { gap: 10px; padding: 12px 14px 14px; margin-bottom: 9px; border-radius: 13px; }
-  .step-current-icon { width: 38px; height: 38px; border-radius: 11px; }
-  .step-current-icon svg { width: 20px; height: 20px; }
-  .step-current h2 { font-size: 18px; }
-  .step-current p { display: none; }
-  .step-upnext { font-size: 12px; }
-  .step-top { gap: 8px; }
-  .step-eyebrow { letter-spacing: .8px; }
-  .step-upnext-word { display: none; }
-  .step-track { gap: 4px; }
-  .step-label { display: none; }
-  .step-track .is-active .step-label { display: none; }
+/* Barra superior: todos los pasos en una fila. Completados con ✓ (se puede volver), actual en grande, pendientes en gris. */
+.step-header { flex: none; margin-bottom: 16px; padding: 8px; border: 1px solid #e3e9f6; border-radius: 16px; background: #fff; box-shadow: 0 4px 20px #1b355c0a; }
+.stepper { display: flex; align-items: stretch; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.st { position: relative; flex: 0 0 104px; min-width: 0; }
+.st.is-current { flex: 1 1 auto; margin: 0 6px; }
+/* Línea que une los pasos */
+.st:not(.is-current)::before { content: ''; position: absolute; z-index: 0; top: 30px; left: -4px; right: -4px; height: 2px; background: #e6ebf5; }
+.st.is-done::before { background: var(--green); }
+.st:first-child::before { left: 50%; }
+.st:last-child::before { right: 50%; }
+.st > button, .st > div:not(.st-card) { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; height: 100%; padding: 14px 4px 10px; border: 0; border-radius: 12px; background: transparent; text-align: center; }
+.st.is-done > button:hover { background: var(--mint); }
+.st-dot { display: grid; place-items: center; width: 32px; height: 32px; border: 2px solid #e1e7f3; border-radius: 50%; background: #fff; color: #8792a8; font-size: 12px; font-weight: 700; }
+.st-dot svg { width: 16px; height: 16px; }
+.st.is-done .st-dot { border-color: var(--green); background: var(--green); color: #fff; }
+.st-name { overflow: hidden; max-width: 100%; color: #56627a; font-size: 13px; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.st.is-done .st-name { color: var(--green-dark); }
+.st-state { color: #9aa5b9; font-size: 11px; }
+.st.is-done .st-state { color: #2f7d5b; font-weight: 600; }
+/* Paso actual */
+.st-card { display: flex; align-items: center; gap: 14px; height: 100%; padding: 14px 18px; border-radius: 12px; background: var(--mint); box-shadow: inset 0 0 0 1px #d3deff; }
+.st-icon { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--green); color: #fff; box-shadow: 0 6px 14px #3156b52e; }
+.st-icon svg { width: 24px; height: 24px; }
+.st-copy { flex: 1; min-width: 0; }
+.step-badge { display: inline-block; margin-bottom: 4px; padding: 3px 11px; border-radius: 999px; background: var(--green); color: #fff; font-family: var(--heading); font-size: 13px; font-weight: 800; letter-spacing: .2px; }
+.st-copy h2 { font-size: 21px; font-weight: 800; letter-spacing: -.5px; line-height: 1.2; color: var(--green-dark); }
+.st-copy h2:focus { outline: none; }
+.st-copy p { margin-top: 2px; color: var(--muted); font-size: 13.5px; }
+.st-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 13px 0 9px; border: 1px solid #c9d6f7; border-radius: 999px; background: #fff; color: var(--green); font-size: 13px; font-weight: 600; }
+.st-back svg { width: 16px; height: 16px; }
+.st-back:hover { background: #f7f9ff; }
+@media (max-width: 1180px) {
+  .st { flex-basis: 78px; }
+  .st-state { display: none; }
+  .st-copy p { display: none; }
+}
+@media (max-width: 760px) {
+  .step-header { padding: 6px; margin-bottom: 9px; }
+  .stepper { flex-wrap: wrap; gap: 2px; }
+  .st { flex: 1 1 0; }
+  .st.is-current { order: -1; flex-basis: 100%; margin: 0 0 4px; }
+  .st::before { display: none; }
+  .st > button, .st > div:not(.st-card) { padding: 6px 2px; gap: 3px; }
+  .st-dot { width: 26px; height: 26px; font-size: 10.5px; }
+  .st-name { font-size: 10.5px; }
+  .st-card { padding: 10px 12px; gap: 10px; }
+  .st-icon { width: 38px; height: 38px; border-radius: 11px; }
+  .st-icon svg { width: 20px; height: 20px; }
+  .st-copy h2 { font-size: 17px; }
+  .step-badge { font-size: 11.5px; }
+  .st-back { height: 30px; padding: 0 10px 0 7px; font-size: 12px; }
 }
 @media (max-height: 700px) and (min-width: 981px) {
-  .step-header { gap: 10px; padding-block: 12px; }
-  .step-current p { display: none; }
+  .st-card { padding-block: 9px; }
+  .st-copy p { display: none; }
 }
 
 /* Ayuda contextual "?" */
