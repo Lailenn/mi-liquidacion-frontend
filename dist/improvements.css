@@ -84,6 +84,16 @@
 .time-chip { height: 36px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); font-size: 13px; font-weight: 600; }
 .time-chip:hover { border-color: #b9c9f2; background: var(--mint); }
 .time-chip.is-selected { border-color: var(--green); background: var(--green); color: #fff; }
+.time-manual { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #dbe3f5; }
+.entry-fields .time-manual label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 12px; font-weight: 600; }
+.time-manual-row { display: flex; gap: 6px; }
+.time-manual-input { flex: 1; min-width: 0; height: 38px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; font-size: 15px; font-weight: 600; }
+.time-manual-input[aria-invalid="true"] { border-color: #d14b4b; }
+.time-ampm { display: flex; padding: 3px; border-radius: 9px; background: #f1f4fa; }
+.time-ampm button { padding: 0 9px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 12.5px; font-weight: 600; }
+.time-ampm button.is-active { background: #fff; color: var(--green); box-shadow: 0 1px 4px #1e2e5422; }
+.time-apply { padding: 0 14px; border: 0; border-radius: 9px; background: var(--green); color: #fff; font-size: 13px; font-weight: 700; }
+.time-manual-error { display: block; margin-top: 6px; color: #b23c3c; font-size: 12px; }
 .entry-fields { grid-template-columns: 1fr 1fr 1fr 25px; }
 .entry-fields .field label { font-size: 13px; font-weight: 600; }
 .time-summary { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 8px; background: var(--mint); color: var(--green-dark); font-weight: 700; }
