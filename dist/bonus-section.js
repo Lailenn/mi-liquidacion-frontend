@@ -1,32 +1,6 @@
 'use strict';
 
 const BONUS_SOURCE='https://asamblea.gob.sv/node/14127';
-function completedYears(start,end){
- let years=end.getUTCFullYear()-start.getUTCFullYear();
- if(end.getUTCMonth()<start.getUTCMonth()||(end.getUTCMonth()===start.getUTCMonth()&&end.getUTCDate()<start.getUTCDate()))years--;
- return Math.max(0,years);
-}
-function bonusEstimate(){
- const start=dateValue(data.start),end=dateValue(data.end),salary=Number(data.salary);
- if(!start||!end||end<start||!Number.isFinite(salary)||salary<=0)return {valid:false,amount:0,pending:0,paid:0,label:'Datos por completar'};
- const year=end.getUTCFullYear(),reference=dateValue(`${year}-12-12`),cycleStart=dateValue(`${year-1}-12-12`),cycleEnd=new Date(reference.getTime()-DAY);
- const windowStart=`${year}-${year>=2026?'10-01':year===2025?'10-20':'12-12'}`;
- // Tramo según años de servicio: 1 a menos de 3 → 15 días; 3 a menos de 10 → 19 días; 10 o más → 21 días.
- const tierDate=end<reference?end:reference,years=completedYears(start,tierDate),salaryDays=years>=10?21:years>=3?19:15;
- const annualAmount=salary/30*salaryDays;
- const from=start>cycleStart?start:cycleStart,to=end<cycleEnd?end:cycleEnd;
- const cycleDays=365,workedDays=Math.max(0,Math.round((to-from)/DAY)+1);
- // Reforma 2026: desde el 1 de octubre ya corresponde el aguinaldo completo si tiene al menos 1 año de servicio.
- // Si termina el 30 de septiembre o antes, o no cumple 1 año, se paga proporcional: completo × días ÷ 365.
- const inPaymentWindow=end>=dateValue(windowStart),hasYear=completedYears(start,end)>=1;
- const full=(inPaymentWindow||end>=reference)&&hasYear;
- const amount=round2(full?annualAmount:annualAmount*Math.min(1,workedDays/cycleDays));
- const paid=data.bonusPaid==='si'?Math.max(0,Number(data.bonusPaidAmount)||0):0;
- const pending=Math.max(0,round2(amount-paid));
- const label=full?'Aguinaldo completo':'Aguinaldo proporcional';
- const reason=full?`La terminación es el ${dateLabel(data.end)}, dentro del período de pago que inicia el ${dateLabel(windowStart)}, y tienes al menos 1 año de servicio: corresponde el aguinaldo completo.`:!hasYear?'Aún no cumples 1 año de servicio: corresponde la parte proporcional al tiempo trabajado.':`La terminación es antes del ${dateLabel(windowStart)}: corresponde la parte proporcional del ciclo anual.`;
- return {valid:true,year,reference:reference.toISOString().slice(0,10),windowStart,cycleDays,workedDays,from:from.toISOString().slice(0,10),to:to.toISOString().slice(0,10),years,salaryDays,annualAmount,full,label,reason,amount,paid,pending};
-}
 function bonusResult(){
  const b=bonusEstimate();
  if(!b.valid)return `<div class="notice amber">${icon('info')}<div>Completa las fechas de trabajo y el salario para revisar el aguinaldo.</div></div>`;
