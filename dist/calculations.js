@@ -112,3 +112,15 @@ function liquidationRows(){
  if(data.rest)rows.push({label:'Descansos semanales trabajados',base:'Arts. 175 y 194 CT',formula:`${s.restOrdinary.length} × ${money(s.daily)} × 1.5${s.restHolidays.length?` + ${s.restHolidays.length} × ${money(s.daily)} × 2 (asueto)`:''}`,amount:s.restPay,salary:true});
  return rows;
 }
+
+// Jornada ordinaria de 44 horas semanales: lunes a viernes 8 horas y sábado de 8:00 a. m. a 12:00 m.
+// Un sábado laboral, las horas extras empiezan desde las 12:00 m.
+const SATURDAY_ORDINARY={start:8*60,end:12*60};
+function isWorkingSaturday(date){const d=dateValue(date);return !!d&&d.getUTCDay()===6&&(data.restDay||'Domingo')!=='Sábado';}
+function saturdayOverlap(row){
+ if(!isWorkingSaturday(row.date))return false;
+ const h=splitHours(row);if(!h)return false;
+ const toMinutes=s=>Number(s.slice(0,2))*60+Number(s.slice(3));
+ const start=toMinutes(row.start),end=toMinutes(row.end)+(h.nextDay?1440:0);
+ return start<SATURDAY_ORDINARY.end&&end>SATURDAY_ORDINARY.start;
+}

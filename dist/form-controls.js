@@ -11,6 +11,7 @@ function overtimeIssue(row){
  if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(row.end||''))return {...target,field:`ot-end-${row.id}`,message:'Completa una hora de fin válida.'};
  const h=splitHours(row);
  if(!h)return {...target,field:`ot-end-${row.id}`,message:'La hora de fin debe ser diferente de la hora de inicio.'};
+ if(saturdayOverlap(row))return {...target,field:`ot-start-${row.id}`,message:'Los sábados la jornada ordinaria es de 8:00 a. m. a 12:00 m. Las horas extras cuentan desde las 12:00 m.'};
  if(h.nextDay&&dateValue(datePlusDays(row.date,1))>dateValue(data.end))return {...target,field:`ot-end-${row.id}`,message:`Termina el ${dateLabel(datePlusDays(row.date,1))}, después de la finalización del trabajo. Corrige la fecha o la hora de fin.`};
  return null;
 }
