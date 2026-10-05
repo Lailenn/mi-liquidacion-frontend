@@ -133,3 +133,23 @@
   .right-column { top: 8px; max-height: none; overflow: visible; }
   .form-panel { flex: none; }
 }
+
+/* Barra de pasos fija arriba al desplazarse; el resumen lateral queda debajo de ella. */
+@media screen {
+  html { scroll-padding-top: calc(var(--steps-h, 130px) + 24px); }
+  .step-header { position: sticky; top: 8px; z-index: 30; box-shadow: 0 -8px 0 8px var(--bg), 0 6px 20px #1b355c14; }
+  .right-column { top: calc(var(--steps-h, 130px) + 24px); max-height: calc(100vh - var(--steps-h, 130px) - 40px); }
+}
+@media screen and (max-width: 980px) {
+  .right-column { top: calc(var(--steps-h, 130px) + 16px); max-height: none; }
+}
+@media screen and (max-width: 980px) {
+  .content-grid { align-items: stretch; }
+  .right-column { align-self: stretch; }
+}
+@media screen and (max-width: 650px) {
+  .badge-name { display: none; }
+}
+@media screen and (max-width: 980px) {
+  .mobile-summary-toggle { box-shadow: 0 -10px 0 2px var(--bg), 0 6px 14px #1b355c14; }
+}

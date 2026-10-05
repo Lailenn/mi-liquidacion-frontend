@@ -46,10 +46,13 @@ function stepHeader(){
   const num=String(i+1).padStart(2,'0');
   if(i<currentStep)return `<li class="st is-done"><button type="button" data-step="${i}" aria-label="Paso ${i+1}: ${x.name}, completado. Volver a este paso"><span class="st-dot">${icon('check')}</span><span class="st-name">${x.short}</span><span class="st-state">Completado</span></button></li>`;
   if(i>currentStep)return `<li class="st is-next"><div aria-label="Paso ${i+1}: ${x.name}, pendiente"><span class="st-dot">${num}</span><span class="st-name">${x.short}</span><span class="st-state">Pendiente</span></div></li>`;
-  return `<li class="st is-current" aria-current="step"><div class="st-card"><span class="st-icon">${icon(s.icon)}</span><div class="st-copy"><span class="step-badge">Paso ${i+1} de ${steps.length} · ${s.name}</span><h2 tabindex="-1" id="step-heading">${s.title}</h2><p>${s.desc}</p></div>${prev?`<button type="button" class="st-back" data-step="${i-1}" aria-label="Volver al paso ${i}: ${prev.name}">${icon('back')}Volver</button>`:''}</div></li>`;
+  return `<li class="st is-current" aria-current="step"><div class="st-card"><span class="st-icon">${icon(s.icon)}</span><div class="st-copy"><span class="step-badge">Paso ${i+1} de ${steps.length}<span class="badge-name"> · ${s.name}</span></span><h2 tabindex="-1" id="step-heading">${s.title}</h2><p>${s.desc}</p></div>${prev?`<button type="button" class="st-back" data-step="${i-1}" aria-label="Volver al paso ${i}: ${prev.name}">${icon('back')}Volver</button>`:''}</div></li>`;
  };
  return `<ol class="stepper">${steps.map(item).join('')}</ol>`;
 }
+// Altura de la barra de pasos fija, para colocar el resumen lateral justo debajo.
+function syncStepsHeight(){const h=document.querySelector('.step-header')?.offsetHeight;if(h)document.documentElement.style.setProperty('--steps-h',h+'px');}
+window.addEventListener('resize',syncStepsHeight);
 function shell(){
  const oldWizard=document.querySelector('#wizard');
  const sameStep=oldWizard?.dataset.currentStep===String(currentStep);
@@ -68,6 +71,7 @@ function shell(){
  bindEvents();
  bindPendingEvents();
  bindTimePickers();
+ syncStepsHeight();
  document.querySelector('#wizard').scrollTop=formScroll;
  if(pageScroll!==null)window.scrollTo(0,pageScroll);
  document.querySelector('#aside').scrollTop=asideScroll;
