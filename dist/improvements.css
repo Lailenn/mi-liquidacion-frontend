@@ -117,3 +117,19 @@
 .tier-table tr.on td { background: var(--mint); color: var(--green-dark); font-weight: 700; }
 .field-label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
 .fixed-value { display: flex; align-items: center; height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 9px; background: #f6f8fc; font-weight: 600; }
+
+/* Scroll de página completa: el formulario y sus tarjetas se desplazan con la página.
+   Solo "Tu información" queda fija al costado (o arriba en móvil). */
+@media screen {
+  html, body { height: auto; }
+  body { overflow: visible; overflow-x: hidden; }
+  #app, .app-main { height: auto; min-height: 100vh; }
+  .workspace { flex: none; }
+  .content-grid { flex: none; align-items: start; }
+  .form-panel { height: auto; overflow: visible; overscroll-behavior: auto; scrollbar-gutter: auto; }
+  .right-column { position: sticky; top: 16px; align-self: start; height: auto; max-height: calc(100vh - 32px); overflow-y: auto; }
+}
+@media screen and (max-width: 980px) {
+  .right-column { top: 8px; max-height: none; overflow: visible; }
+  .form-panel { flex: none; }
+}

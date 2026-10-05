@@ -53,7 +53,7 @@ function stepHeader(){
 function shell(){
  const oldWizard=document.querySelector('#wizard');
  const sameStep=oldWizard?.dataset.currentStep===String(currentStep);
- const formScroll=sameStep?(oldWizard?.scrollTop||0):0;
+ const formScroll=sameStep?(oldWizard?.scrollTop||0):0,pageScroll=sameStep?window.scrollY:null;
  const visibleSections=new Set([...document.querySelectorAll('#wizard [data-reveal]')].map(el=>el.dataset.reveal));
  const asideScroll=document.querySelector('#aside')?.scrollTop||0;
  const detailsScroll=document.querySelector('#summary-details')?.scrollTop||0;
@@ -69,6 +69,7 @@ function shell(){
  bindPendingEvents();
  bindTimePickers();
  document.querySelector('#wizard').scrollTop=formScroll;
+ if(pageScroll!==null)window.scrollTo(0,pageScroll);
  document.querySelector('#aside').scrollTop=asideScroll;
  document.querySelector('#summary-details').scrollTop=detailsScroll;
  animateFormContent(sameStep,visibleSections);
