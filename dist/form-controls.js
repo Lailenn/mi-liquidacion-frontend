@@ -40,11 +40,16 @@ function collectErrors(step){
   if(!a||a.getUTCFullYear()<1950||a.getUTCFullYear()>2100)add('Selecciona una fecha de inicio válida.','start');
   if(!b||b.getUTCFullYear()<1950||b.getUTCFullYear()>2100)add('Selecciona una fecha de finalización válida.','end');
   if(a&&b&&b<a)add('La fecha de finalización debe ser igual o posterior al inicio.','end');
+  const today=dateValue(todayValue());
+  if(a&&a>today)add('La fecha de inicio no puede ser futura.','start');
+  if(b&&b>today)add(`La fecha de finalización no puede ser posterior a hoy (${dateLabel(todayValue())}).`,'end');
   if(!Number.isFinite(Number(data.salary))||Number(data.salary)<=0||Number(data.salary)>1000000)add('Escribe un salario mayor que $0 y menor o igual a $1,000,000.','salary');
  }
  if(step===1&&data.termination==='renuncia'&&data.notice==='si'&&!validEmploymentDate(data.noticeDate))add('La fecha del preaviso debe estar dentro del período trabajado.','noticeDate');
  if(step===2&&data.vacation==='si'){
   if(!validEmploymentDate(data.vacStart))add('El primer día de vacaciones debe estar dentro del período trabajado.','vacStart');
+  else if(vacationStartIssue())add(vacationStartIssue(),'vacStart');
+  if(data.vacationPayment==='parcial'&&!(Number(data.vacationPaidAmount)>0))add('Indica el monto que recibiste por las vacaciones.','vacationPaidAmount');
   if(!validEmploymentDate(data.vacEnd)||dateValue(data.vacEnd)<dateValue(data.vacStart))add('Revisa el último día de vacaciones: debe ser posterior al inicio y estar dentro del período trabajado.','vacEnd');
  }
  if(step===3&&data.bonusPaid==='si'){
@@ -74,5 +79,5 @@ function summaryErrors(){
  return errors.length?`<div class="summary-errors" role="alert"><strong>${errors.length} ${errors.length===1?'dato por corregir':'datos por corregir'}</strong><p>Puedes abrir cada aviso para ir directamente al campo.</p><ul>${errors.map(e=>`<li><button type="button" class="error-link" data-error-field="${escapeHTML(e.field)}" data-error-step="${e.step}">${escapeHTML(e.message)}<span>${steps[e.step].name}</span></button></li>`).join('')}</ul></div>`:'';
 }
 function stepSummary(){
- return `${summaryErrors()}<div class="example-note">${icon('info')}<div><strong>Resumen de demostración.</strong> Aguinaldo, horas extras y asuetos reflejan tus registros. Las demás prestaciones siguen siendo ejemplos. ISSS y AFP muestran una referencia mensual; el ISR está pendiente de cálculo.</div></div><div class="results-header"><h3>Datos del comprobante</h3><button type="button" class="text-button" data-step="0">Editar</button></div>${identity()}<div class="results-header"><h3>Prestaciones y descuentos</h3><span class="example-chip">PROTOTIPO</span></div>${breakdown()}<div class="summary-bonus"><strong>${bonusEstimate().label}</strong><p>${bonusEstimate().reason||'Completa los datos de trabajo.'}</p><button type="button" class="text-button" data-step="3">Revisar aguinaldo</button></div>${legalCapsContent()}<details class="legal-details"><summary>Formato del comprobante${icon('down')}</summary><p>Incluye los datos de las partes, prestaciones con base legal, deducciones, monto en letras, declaración, firmas y advertencia del modelo proporcionado.</p></details>`;
+ return `${summaryErrors()}<div class="example-note">${icon('info')}<div><strong>Cálculo con tus datos.</strong> Cada concepto muestra su base legal y la fórmula usada, con los topes legales aplicados. ISSS y AFP se descuentan solo de los conceptos salariales; el ISR está pendiente de cálculo.</div></div><div class="results-header"><h3>Datos del comprobante</h3><button type="button" class="text-button" data-step="0">Editar</button></div>${identity()}<div class="results-header"><h3>Prestaciones y descuentos</h3><span class="example-chip">CON FÓRMULAS</span></div>${breakdown()}<div class="summary-bonus"><strong>${bonusEstimate().label}</strong><p>${bonusEstimate().reason||'Completa los datos de trabajo.'}</p><button type="button" class="text-button" data-step="3">Revisar aguinaldo</button></div>${legalCapsContent()}<details class="legal-details"><summary>Formato del comprobante${icon('down')}</summary><p>Incluye los datos de las partes, prestaciones con base legal, deducciones, monto en letras, declaración, firmas y advertencia del modelo proporcionado.</p></details>`;
 }

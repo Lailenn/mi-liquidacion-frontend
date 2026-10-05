@@ -11,25 +11,50 @@ Incluye seis pasos visibles en la parte superior: datos del trabajo, terminació
 - Tabla de horas extras diurnas, nocturnas y mixtas, con estimaciones base y detección de jornadas que pasan a otro día.
 - La tabla conserva a la vista todos los registros de la sesión, incluidos los incompletos o inválidos, y suma únicamente los válidos. Sus avisos y los errores del formulario llevan al campo que se debe corregir.
 - ISSS, AFP y salario después de ambas cotizaciones se actualizan también en la tarjeta lateral. Son referencias mensuales, antes de ISR.
-- Aguinaldo con referencia a la reforma aprobada el 23 de septiembre de 2026: período de pago desde el 1 de octubre, manteniendo el 12 de diciembre para el proporcional. No se presume pago completo automático por terminar en octubre. Se puede registrar reconocimiento de pago completo anticipado por la empresa cuando corresponde y restar importes ya recibidos.
+- Aguinaldo con referencia a la reforma aprobada el 23 de septiembre de 2026: período de pago desde el 1 de octubre. Si la relación termina el 1 de octubre o después, con al menos 1 año de servicio, el aguinaldo es completo; si termina el 30 de septiembre o antes, es proporcional. Se pueden restar importes ya recibidos.
 - Comprobante con la estructura de dos páginas del modelo proporcionado: datos, prestaciones y base legal, deducciones, importe en letras, declaración, firmas y advertencia legal. El ISR se presenta como pendiente de cálculo.
 - Paleta azul y pizarra, controles Sí/No visibles, transiciones de pasos y registros, y resaltado del campo con error. Se respeta la preferencia de movimiento reducido.
 - Pasos superiores y tarjeta de información fijos; el panel central completo se desplaza hacia abajo, con sus campos y botones en el flujo para mostrar toda la información. El resumen está disponible en un panel desplegable superior en móvil.
 - Preguntas destacadas con tarjetas, iconos y selección visible. Animaciones suaves al entrar a un paso, desplegar campos y elegir respuestas. La posición del formulario se conserva al cambiar respuestas y los importes laterales se actualizan sin animaciones que distraigan.
 
+## Fórmulas (archivo dist/calculations.js)
+
+Constantes de clase: salario diario = salario mensual ÷ 30; proporcionales ÷ 365.
+
+| Concepto | Fórmula | Tope / regla |
+|---|---|---|
+| Indemnización por despido (Art. 58) | base × años de servicio (con fracción) | Base máxima: 4 × salario mínimo diario × 30. Mínimo: 15 días de salario. |
+| Prestación por renuncia | base ÷ 30 × 15 × años de servicio | Base máxima: 2 × salario mínimo diario × 30. Requiere 2 años y preaviso escrito de 15 días. |
+| Vacación completa (Art. 177) | salario diario × 15 × 1.30 | No se acumula ni se cambia por dinero. No puede iniciar en día de descanso ni en asueto. |
+| Vacación proporcional (Art. 187) | vacación completa × días del período en curso ÷ 365 | |
+| Aguinaldo (Arts. 196–202) | salario diario × 15, 19 o 21 días | 1 a <3 años: 15; 3 a <10: 19; 10 o más: 21. Completo si termina desde el 1 de octubre con al menos 1 año; si no, proporcional: completo × días ÷ 365. Exento de ISSS/AFP; ISR solo arriba de $1,500. |
+| Asueto trabajado (Arts. 190, 192) | salario diario × 2 | Asuetos nacionales + fiesta patronal de San Miguel (21 de noviembre). |
+| Descanso semanal trabajado (Art. 175) | salario diario × 1.5 + día compensatorio | Si coincide con asueto (Art. 194): × 2, no × 2.5, y también da compensatorio. |
+| Hora extra diurna / nocturna (Arts. 168, 169) | hora ordinaria × 2 / × 2 × 1.25 | Diurna 6 a. m.–7 p. m. En asueto la hora base se duplica; en descanso semanal × 1.5. |
+| ISSS / AFP | 3% / 7.25% de los conceptos salariales | ISSS con base máxima de $1,000 (máx. $30). AFP sin techo. No se aplican a aguinaldo ni indemnización. |
+
+## Mejoras según las indicaciones de clase (semana 10)
+
+- Montos reales calculados con fórmulas visibles en el código y en el resumen (antes eran montos de ejemplo).
+- Topes legales aplicados: aunque el salario sea mayor, se usa la base máxima.
+- Aguinaldo con la reforma: desde el 1 de octubre es completo; el 30 de septiembre es proporcional.
+- El calendario llega solo hasta la fecha actual: no se pueden registrar fechas futuras.
+- Horas elegidas en listas de hora y minutos, sin reloj.
+- Paso actual en grande ("Paso 1 de 6") encima del título de cada pantalla.
+- Botones "?" con explicaciones para el usuario en los campos que pueden generar dudas.
+- Día de descanso semanal configurable, validación del inicio de vacaciones y aviso de días compensatorios.
+
 ## Alcance
 
-- Únicamente frontend, sin servidor, autenticación ni almacenamiento de datos.
-- Los datos del formulario permanecen en memoria durante la sesión.
-- El total de la liquidación conserva montos de ejemplo para indemnización, vacaciones y descanso semanal. El aguinaldo usa una estimación del ciclo de referencia; ISSS y AFP usan el salario mensual como referencia visual. El ISR no se calcula y el neto se etiqueta expresamente como ilustrativo antes de ISR. No es una liquidación definitiva.
-- Las horas extras se estiman a partir de los registros y una jornada ordinaria de referencia de 8 horas. Si coinciden con un asueto, se señala que el recargo especial requiere revisión y no se incluye en esa estimación base.
-- Los asuetos seleccionados estiman días completos sin pago a salario diario por dos. El formulario indica que el saldo debe ajustarse si ya se recibió el salario ordinario.
-- Las referencias de topes y tasas se documentan con fuentes en `labor-reference.js`. El salario mínimo mensual publicado por el MTPS para comercio y servicios es $408.80 desde junio de 2025; la transcripción de clase con $418.80 se identifica como pendiente de confirmación. Los topes de indemnización y renuncia se expresan sobre el salario mínimo diario legal, sin sustituirlo por mensual/30.
-- No se ha implementado un motor completo de liquidación. La app futura deberá resolver los requisitos legales de cada prestación, el preaviso, las bases cotizables por mes, los recargos especiales y el tratamiento de períodos vacacionales acumulados. La referencia mensual de cotizaciones no se descuenta automáticamente de toda la liquidación.
+- Únicamente frontend, sin servidor, autenticación ni almacenamiento de datos. Los datos permanecen en memoria durante la sesión.
+- El ISR no se calcula; el neto se presenta antes de ISR. No sustituye una liquidación oficial.
+- Salario mínimo de referencia: $408.80 mensuales para comercio y servicios (MTPS, junio de 2025). Fuentes en `dist/labor-reference.js`.
 
 ## Archivos
 
 - `dist/index.html`: documento principal y metadatos.
+- `dist/calculations.js`: todas las fórmulas de la liquidación y sus topes legales.
+- `dist/improvements.css`: paso grande, ayudas "?", listas de hora y cajas de cálculo.
 - `dist/styles.css`: diseño responsive y estilos para impresión.
 - `dist/app.js`: navegación, formularios condicionales y vista previa del comprobante.
 - `dist/refinements.css`: pasos superiores, lista de asuetos, tablas y campos adicionales.
