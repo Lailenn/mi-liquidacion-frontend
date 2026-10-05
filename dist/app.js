@@ -42,11 +42,12 @@ function brand(){return `<span class="brand-mark">${icon('file')}</span><span><s
 // Barra superior: botón para volver, el paso actual en grande y los pasos que faltan. Los pasos completados se ocultan.
 function stepHeader(){
  const s=steps[currentStep],prev=steps[currentStep-1];
- const back=prev?`<button type="button" class="step-back" data-step="${currentStep-1}" aria-label="Volver al paso ${currentStep}: ${prev.name}">${icon('back')}<span><small>Volver al paso ${currentStep}</small><b>${prev.short}</b></span></button>`:'';
- const current=`<div class="step-current" aria-current="step"><span class="step-current-icon">${icon(s.icon)}</span><div class="step-current-copy"><span class="step-badge">Paso ${currentStep+1} de ${steps.length} · ${s.name}</span><h2 tabindex="-1" id="step-heading">${s.title}</h2><p>${s.desc}</p></div></div>`;
- const upcoming=steps.map((x,i)=>i>currentStep?`<li class="step-next"><span class="step-num">${String(i+1).padStart(2,'0')}</span>${x.short}</li>`:'').join('');
- const done=currentStep?`<span class="step-done">${icon('check')}${currentStep} ${currentStep===1?'paso completado':'pasos completados'}</span>`:'';
- return `${back}${current}${upcoming||done?`<div class="step-rest">${done}${upcoming?`<span class="step-rest-label">Siguen</span><ol>${upcoming}</ol>`:''}</div>`:''}`;
+ const next=steps[currentStep+1];
+ const back=prev?`<button type="button" class="step-back" data-step="${currentStep-1}" aria-label="Volver al paso ${currentStep}: ${prev.name}">${icon('back')}<span>${prev.short}</span></button>`:'';
+ const top=`<div class="step-top">${back}<span class="step-eyebrow">Paso <b>${currentStep+1}</b> de ${steps.length}</span><span class="step-upnext">${next?`<span class="step-upnext-word">Siguiente:</span> <b>${next.short}</b>${icon('chevron')}`:`${icon('check')}Último paso`}</span></div>`;
+ const title=`<div class="step-current" aria-current="step"><span class="step-current-icon">${icon(s.icon)}</span><div><h2 tabindex="-1" id="step-heading">${s.title}</h2><p>${s.desc}</p></div></div>`;
+ const track=`<ol class="step-track" aria-label="Progreso">${steps.map((x,i)=>`<li class="${i<currentStep?'is-done':i===currentStep?'is-active':''}"><span class="step-bar"></span>${i<currentStep?'':`<span class="step-label">${x.short}</span>`}</li>`).join('')}</ol>`;
+ return top+title+track;
 }
 function shell(){
  const oldWizard=document.querySelector('#wizard');
