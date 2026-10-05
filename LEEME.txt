@@ -1,0 +1,26 @@
+MI LIQUIDACIÓN — CÓDIGO DEL FRONTEND
+
+Paso 1. Extrae la carpeta completa del archivo RAR.
+Paso 2. Abre dist/index.html con tu navegador para ver la página.
+Paso 3. En Visual Studio Code, selecciona Archivo > Abrir carpeta y elige
+        mi-liquidacion-frontend para consultar o editar el código.
+
+Archivos principales:
+- dist/index.html: página de entrada.
+- dist/app.js: navegación y funcionamiento del formulario.
+- dist/styles.css, refinements.css, revision.css y focus-layout.css:
+  colores, distribución, formularios y animaciones.
+- dist/vacations-section.js: vacaciones.
+- dist/bonus-section.js: aguinaldo y cotizaciones mensuales.
+- dist/pending-section.js: registros, horas extras y asuetos.
+- dist/form-controls.js: controles Sí/No y validaciones.
+- dist/labor-reference.js: referencias y calendario.
+- dist/letter.js y letter.css: comprobante e impresión.
+- README.md: descripción completa, archivos y alcance del prototipo.
+
+No requiere instalar dependencias ni ejecutar npm.
+Puedes usar Live Server de VS Code si prefieres una vista local.
+Los datos permanecen durante la sesión y se reinician al recargar.
+Es un frontend de demostración; consulta el alcance en README.md.
+
+Versión exportada: fffd9a817d1d87da9241f33fe3a801c4ac805433

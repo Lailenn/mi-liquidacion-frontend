@@ -1,0 +1,57 @@
+/* Pasos superiores: todos visibles; el paso activo se muestra grande. */
+.top-steps { display: flex; gap: 6px; align-items: stretch; }
+
+.top-steps .step-item {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  justify-content: flex-start;
+  transition: flex .38s cubic-bezier(.4, 0, .2, 1), background .25s, padding .25s, box-shadow .25s;
+}
+.top-steps .step-copy { min-width: 0; }
+.top-steps .step-copy b,
+.top-steps .step-copy small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Pasos inactivos: compactos (número + nombre corto) */
+.top-steps .step-item:not(.active) .step-copy { font-size: 13px; }
+.top-steps .step-item:not(.active) .step-copy small { display: none; }
+.top-steps .step-item:not(.active) .full-step-name { display: none; }
+.top-steps .step-item:not(.active) .short-step-name { display: block; }
+
+/* Paso activo: grande, con nombre completo y descripción */
+.top-steps .step-item.active {
+  flex: 2.8 1 0;
+  min-height: 78px;
+  padding: 14px 20px;
+  gap: 15px;
+  box-shadow: inset 0 0 0 1px #d3deff;
+}
+.top-steps .step-item.active .step-num { width: 46px; height: 46px; font-size: 16px; }
+.top-steps .step-item.active .step-copy { font-size: 18px; line-height: 1.25; color: #243b78; }
+.top-steps .step-item.active .step-copy small { display: block; font-size: 13px; margin-top: 3px; }
+.top-steps .step-item.active .full-step-name { display: block; }
+.top-steps .step-item.active .short-step-name { display: none; }
+.top-steps .step-item.active:after { left: 20px; right: 20px; height: 4px; }
+
+/* Pantallas bajas: menos altura */
+@media (max-height: 700px) and (min-width: 981px) {
+  .top-steps .step-item.active { min-height: 62px; padding-block: 9px; }
+  .top-steps .step-item.active .step-num { width: 38px; height: 38px; font-size: 14px; }
+  .top-steps .step-item.active .step-copy { font-size: 16px; }
+}
+
+/* Móvil: los inactivos son solo el número; el activo muestra su nombre */
+@media (max-width: 650px) {
+  .top-steps { display: flex; gap: 2px; padding: 6px; }
+  .top-steps .step-item { width: auto; flex: 0 0 auto; padding: 5px 3px; min-height: 44px; justify-content: center; }
+  .top-steps .step-item:not(.active) .step-copy { display: none; }
+  .top-steps .step-item .step-num { display: grid !important; width: 26px; height: 26px; font-size: 10px; }
+  .top-steps .step-item.active { flex: 1 1 0; justify-content: flex-start; min-height: 52px; padding: 7px 8px; gap: 8px; }
+  .top-steps .step-item.active .step-num { width: 32px; height: 32px; font-size: 12px; }
+  .top-steps .step-item.active .step-copy { font-size: 14px; }
+  .top-steps .step-item.active .step-copy small { display: none; }
+  .top-steps .step-item.active .full-step-name { display: none; }
+  .top-steps .step-item.active .short-step-name { display: block; }
+  .top-steps .step-item.active:after { left: 12px; right: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .top-steps .step-item { transition: none; } }
