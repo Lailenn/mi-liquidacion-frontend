@@ -67,6 +67,7 @@ function shell(){
  <dialog id="report-dialog" class="report-dialog" aria-labelledby="dialog-title"><div class="dialog-bar"><strong id="dialog-title">Vista previa del comprobante</strong><div class="dialog-actions"><button type="button" class="btn btn-primary" id="print-pdf">${icon('download')}<span>Guardar PDF</span></button><button class="icon-button" id="close-dialog" aria-label="Cerrar vista previa" type="button">${icon('x')}</button></div></div><div id="report-preview"></div></dialog>`;
  bindEvents();
  bindPendingEvents();
+ bindTimePickers();
  document.querySelector('#wizard').scrollTop=formScroll;
  document.querySelector('#aside').scrollTop=asideScroll;
  document.querySelector('#summary-details').scrollTop=detailsScroll;
@@ -94,17 +95,6 @@ function stepTermination(){return `<div class="question-card" role="group" aria-
 function splitHours(row){if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(row.start)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(row.end)||row.start===row.end)return null;const toMinutes=s=>Number(s.slice(0,2))*60+Number(s.slice(3));const start=toMinutes(row.start);let end=toMinutes(row.end);const nextDay=end<start;if(nextDay)end+=1440;let day=0,night=0;for(let t=start;t<end;t++){const m=t%1440;if(m>=360&&m<1140)day++;else night++;}return {day:day/60,night:night/60,total:(end-start)/60,nextDay};}
 const hours=(v)=>Number(v.toFixed(2)).toLocaleString('es-SV',{maximumFractionDigits:2});
 const WEEKDAYS=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-// Hora en una sola lista con formato común (5:00 p. m.), cada media hora y agrupada por momento del día.
-function timeLabel(value){if(!/^\d{2}:\d{2}$/.test(value||''))return '—';const h=Number(value.slice(0,2)),m=value.slice(3);return `${h%12||12}:${m} ${h<12?'a. m.':'p. m.'}`;}
-const TIME_GROUPS=[['Mañana · diurna',6,12],['Tarde · diurna',12,19],['Noche · nocturna',19,24],['Madrugada · nocturna',0,6]];
-function timeField(row,key,label){
- const id=`ot-${key}-${row.id}`,value=row[key]||'';
- const option=v=>`<option value="${v}" ${v===value?'selected':''}>${timeLabel(v)}</option>`;
- const range=(from,to)=>Array.from({length:(to-from)*2},(_,i)=>`${String(from+Math.floor(i/2)).padStart(2,'0')}:${i%2?'30':'00'}`);
- const known=TIME_GROUPS.flatMap(([,from,to])=>range(from,to));
- const extra=value&&!known.includes(value)?option(value):'';
- return `<div class="field"><label for="${id}">${label}</label><select id="${id}" class="time-pick" data-row="${row.id}" data-group="overtime" data-key="${key}"><option value="">Elige la hora</option>${extra}${TIME_GROUPS.map(([name,from,to])=>`<optgroup label="${name}">${range(from,to).map(option).join('')}</optgroup>`).join('')}</select></div>`;
-}
 function terminationPreview(){
  if(data.termination==='despido'){const d=dismissalCalc();return `<div class="calc-box"><div class="calc-head">${icon('shield')}<strong>Indemnización estimada: ${money(d.amount)}</strong></div><ul><li>Tope legal de la base: 4 × ${money(minimumDaily())} (mínimo diario de ${escapeHTML(data.sector)}) × 30 = <b>${money(d.cap)}</b></li><li>Tu salario: ${money(d.salary)} → base usada: <b>${money(d.base)}</b>${d.capped?' <span class="cap-flag">Se aplicó el tope</span>':''}</li><li>Antigüedad: ${d.service.full} años + ${d.service.days} días ÷ 365 = ${d.service.total.toFixed(4)} años</li><li>${money(d.base)} × ${d.service.total.toFixed(4)} = ${money(d.base*d.service.total)}${d.appliedMinimum?` · menor que el mínimo de 15 días (${money(d.minimum)}), se paga el mínimo`:''}</li></ul></div>`;}
  const r=resignationCalc();return `<div class="calc-box ${r.eligible?'':'amber'}"><div class="calc-head">${icon('shield')}<strong>Prestación por renuncia: ${r.eligible?money(r.amount):'no aplica'}</strong></div><ul><li>Tope legal de la base: 2 × ${money(minimumDaily())} × 30 = <b>${money(r.cap)}</b></li><li>Tu salario: ${money(r.salary)} → base usada: <b>${money(r.base)}</b>${r.capped?' <span class="cap-flag">Se aplicó el tope</span>':''}</li><li>Fórmula: base ÷ 30 × 15 días × ${r.service.total.toFixed(4)} años</li>${r.reasons.map(x=>`<li class="calc-warning">${escapeHTML(x)}</li>`).join('')}</ul></div>`;

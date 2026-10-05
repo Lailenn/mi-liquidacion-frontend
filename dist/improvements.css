@@ -63,13 +63,36 @@
 .help-tip::after { content: attr(data-tip); position: absolute; z-index: 30; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); width: max-content; max-width: min(260px, 75vw); padding: 9px 11px; border-radius: 9px; background: var(--green-dark); color: #fff; font-size: 12.5px; font-weight: 500; line-height: 1.45; text-align: left; white-space: normal; box-shadow: 0 8px 24px #1e2e5433; opacity: 0; pointer-events: none; transition: opacity .15s; }
 .help-tip:hover::after, .help-tip:focus::after { opacity: 1; }
 
-/* Hora en una sola lista (sin reloj) */
-.time-pick { width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); font-size: 15px; font-weight: 600; cursor: pointer; }
-.time-pick:invalid, .time-pick option[value=''] { color: var(--muted); }
+/* Selector de hora: botón + panel con pestañas y botones cada media hora (sin reloj) */
+.time-field { position: relative; }
+.time-trigger { display: flex; align-items: center; gap: 9px; width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); font-size: 15px; font-weight: 600; text-align: left; }
+.time-trigger span { flex: 1; }
+.time-trigger svg { width: 18px; height: 18px; color: var(--green); }
+.time-trigger svg:last-child { color: var(--muted); transition: transform .15s; }
+.time-trigger[aria-expanded="true"] { border-color: var(--green); box-shadow: 0 0 0 3px #3156b51f; }
+.time-trigger[aria-expanded="true"] svg:last-child { transform: rotate(180deg); }
+.time-trigger.is-empty span { color: var(--muted); font-weight: 500; }
+.time-trigger[aria-invalid="true"] { border-color: #d14b4b; }
+.time-pop { position: absolute; z-index: 40; top: calc(100% + 6px); left: 0; width: min(340px, calc(100vw - 48px)); padding: 10px; border: 1px solid #dbe3f5; border-radius: 14px; background: #fff; box-shadow: 0 14px 40px #1e2e5429; }
+.time-field.align-end .time-pop { left: auto; right: 0; }
+.time-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; padding: 3px; border-radius: 10px; background: #f1f4fa; }
+.time-tab { height: 32px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 12.5px; font-weight: 600; }
+.time-tab.is-active { background: #fff; color: var(--green); box-shadow: 0 1px 4px #1e2e5422; }
+.time-kind { display: flex; align-items: center; gap: 6px; margin: 10px 2px 8px; color: var(--muted); font-size: 12px; }
+.time-kind svg { width: 15px; height: 15px; color: var(--green); }
+.time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.time-chip { height: 36px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); font-size: 13px; font-weight: 600; }
+.time-chip:hover { border-color: #b9c9f2; background: var(--mint); }
+.time-chip.is-selected { border-color: var(--green); background: var(--green); color: #fff; }
 .entry-fields { grid-template-columns: 1fr 1fr 1fr 25px; }
 .entry-fields .field label { font-size: 13px; font-weight: 600; }
 .time-summary { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 8px; background: var(--mint); color: var(--green-dark); font-weight: 700; }
-@media (max-width: 760px) { .entry-fields { grid-template-columns: 1fr 1fr 25px; } }
+@media (max-width: 760px) {
+  .entry-fields { grid-template-columns: 1fr 1fr 25px; }
+  .time-pop { position: fixed; top: auto; right: 12px; bottom: 12px; left: 12px; width: auto; }
+  .time-field.align-end .time-pop { left: 12px; right: 12px; }
+  .time-chip { height: 42px; font-size: 14px; }
+}
 
 /* Cálculos visibles con su fórmula */
 .calc-box { margin-top: 16px; padding: 15px 17px; border: 1px solid #d3deff; border-radius: 12px; background: #f7f9ff; }
