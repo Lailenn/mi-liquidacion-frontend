@@ -19,15 +19,15 @@ Incluye seis pasos visibles en la parte superior: datos del trabajo, terminació
 
 ## Fórmulas (archivo dist/formulas.js)
 
-Constantes de clase: salario diario = salario mensual ÷ 30; proporcionales ÷ 365.
+Método comercial del material de clase: salario diario = salario mensual ÷ 30; mes comercial de 30 días y año comercial de 360 días. El tiempo de servicio se cuenta en años, meses y días.
 
 | Concepto | Fórmula | Tope / regla |
 |---|---|---|
-| Indemnización por despido (Art. 58) | base × años de servicio (con fracción) | Base máxima: 4 × salario mínimo diario × 30. Mínimo: 15 días de salario. |
+| Indemnización por despido (Art. 58) | base × años completos + (base ÷ 360) × (meses × 30 + días) | Base máxima: 4 × salario mínimo diario × 30. Mínimo: 15 días de salario. |
 | Prestación por renuncia | base ÷ 30 × 15 × años de servicio | Base máxima: 2 × salario mínimo diario × 30. Requiere 2 años y preaviso escrito de 15 días. |
 | Vacación completa (Art. 177) | salario diario × 15 × 1.30 | No se acumula ni se cambia por dinero. No puede iniciar en día de descanso ni en asueto. |
-| Vacación proporcional (Art. 187) | vacación completa × días del período en curso ÷ 365 | |
-| Aguinaldo (Arts. 196–202) | salario diario × 15, 19 o 21 días | 1 a <3 años: 15; 3 a <10: 19; 10 o más: 21. Completo si termina desde el 1 de octubre con al menos 1 año; si no, proporcional: completo × días ÷ 365. Exento de ISSS/AFP; ISR solo arriba de $1,500. |
+| Vacación proporcional (Art. 187) | (vacación completa × meses trabajados) ÷ 12 | Los días sueltos cuentan como fracción de mes (días ÷ 30). |
+| Aguinaldo (Arts. 196–202) | salario diario × 15, 19 o 21 días | 1 a <3 años: 15; 3 a <10: 19; 10 o más: 21. Completo si termina desde el 1 de octubre con al menos 1 año; si no, proporcional: (completo ÷ 360) × días comerciales desde el 12 de diciembre. Exento de ISSS/AFP; ISR solo arriba de $1,500. |
 | Asueto trabajado (Arts. 190, 192) | salario diario × 2 | Asuetos nacionales + fiesta patronal de San Miguel (21 de noviembre). |
 | Descanso semanal trabajado (Art. 175) | salario diario × 1.5 + día compensatorio | Si coincide con asueto (Art. 194): × 2, no × 2.5, y también da compensatorio. |
 | Hora extra diurna / nocturna (Arts. 168, 169) | hora ordinaria × 2 / × 2 × 1.25 | Diurna 6 a. m.–7 p. m. En asueto la hora base se duplica; en descanso semanal × 1.5. |

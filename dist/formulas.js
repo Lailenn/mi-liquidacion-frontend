@@ -19,11 +19,11 @@
    ===================================================================== */
 
 
-/* 1. CONSTANTES DE CÁLCULO
-   El mes se divide siempre entre 30, el año proporcional entre 365
-   y la jornada ordinaria diaria es de 8 horas. */
+/* 1. CONSTANTES DE CÁLCULO (método comercial del material de clase)
+   Mes comercial = 30 días; año comercial = 360 días;
+   jornada ordinaria diaria = 8 horas. */
 const DAYS_PER_MONTH = 30;
-const DAYS_PER_YEAR = 365;
+const DAYS_PER_YEAR = 360;
 const ORDINARY_HOURS = 8;
 
 
@@ -52,9 +52,26 @@ function minimumDaily() {
 }
 
 
-/* 4. ANTIGÜEDAD
-   Años de servicio = años completos + (días del año en curso ÷ 365)
-   Se incluye el día de finalización. */
+/* 4. TIEMPO DE SERVICIO
+   Se cuenta en años, meses y días (incluye el último día trabajado).
+   Días comerciales = años × 360 + meses × 30 + días
+   Ejemplo del material: 01/01/2015 al 30/09/2021 = 6 años y 9 meses. */
+function commercialPeriod(fromValue, toValue) {
+  const from = dateValue(fromValue), lastDay = dateValue(toValue);
+  if (!from || !lastDay || lastDay < from) return { years: 0, months: 0, days: 0, days360: 0 };
+  const to = new Date(lastDay.getTime() + DAY);            // el último día trabajado cuenta completo
+  const addMonths = (n) => {
+    const d = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth() + n, 1, 12));
+    const lastOfMonth = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+    d.setUTCDate(Math.min(from.getUTCDate(), lastOfMonth));
+    return d;
+  };
+  let totalMonths = (to.getUTCFullYear() - from.getUTCFullYear()) * 12 + to.getUTCMonth() - from.getUTCMonth();
+  if (addMonths(totalMonths) > to) totalMonths--;
+  const days = Math.round((to - addMonths(totalMonths)) / DAY);
+  const years = Math.floor(totalMonths / 12), months = totalMonths % 12;
+  return { years, months, days, days360: years * DAYS_PER_YEAR + months * DAYS_PER_MONTH + days };
+}
 function completedYears(start, end) {
   let years = end.getUTCFullYear() - start.getUTCFullYear();
   const beforeAnniversary = end.getUTCMonth() < start.getUTCMonth() ||
@@ -63,33 +80,41 @@ function completedYears(start, end) {
   return Math.max(0, years);
 }
 function serviceYears() {
-  const start = dateValue(data.start), end = dateValue(data.end);
-  if (!start || !end || end < start) return { full: 0, days: 0, total: 0, anniversary: data.start };
-  const full = completedYears(start, end);
-  const anniversary = addYears(data.start, full);
-  const days = inclusiveDays(anniversary, data.end);
-  return { full, days, total: full + days / DAYS_PER_YEAR, anniversary };
+  const p = commercialPeriod(data.start, data.end);
+  const fractionDays = p.months * DAYS_PER_MONTH + p.days;   // meses × 30 + días
+  return {
+    full: p.years, months: p.months, days: p.days, fractionDays, days360: p.days360,
+    total: p.days360 / DAYS_PER_YEAR, anniversary: addYears(data.start, p.years)
+  };
 }
 
 
 /* 5. INDEMNIZACIÓN POR DESPIDO INJUSTIFICADO (Art. 58)
-   Tope de la base  = 4 × salario mínimo diario × 30
-   Base             = el menor entre el salario y el tope
-   Indemnización    = base × años de servicio (con fracción)
-   Mínimo           = base ÷ 30 × 15 días */
+   Tope de la base            = 4 × salario mínimo diario × 30
+   Base                       = el menor entre el salario y el tope
+   Por años completos         = base × años
+   Indemnización diaria       = base ÷ 360
+   Por la fracción de año     = indemnización diaria × (meses × 30 + días)
+   Indemnización total        = por años completos + por la fracción
+   Mínimo                     = base ÷ 30 × 15 días
+   Ejemplo del material: $600 × 6 años = $3,600; $600 ÷ 360 × 270 días = $450; total $4,050. */
 function dismissalCalc() {
   const salary = monthlySalary();
   const capDaily = minimumDaily() * LABOR_REFERENCE.dismissalDailyCapFactor;   // 4 × mínimo diario
   const cap = capDaily * DAYS_PER_MONTH;
   const base = Math.min(salary, cap);
   const service = serviceYears();
-  const byYears = base * service.total;
+  const forYears = base * service.full;
+  const dailyIndemnity = base / DAYS_PER_YEAR;
+  const forFraction = dailyIndemnity * service.fractionDays;
+  const total = forYears + forFraction;
   const minimum = base / DAYS_PER_MONTH * LABOR_REFERENCE.dismissalMinimumDays;  // 15 días
-  const appliedMinimum = byYears < minimum;
+  const appliedMinimum = total < minimum;
   return {
     salary, capDaily, cap, base, capped: salary > cap, service,
+    forYears: round2(forYears), dailyIndemnity, forFraction: round2(forFraction),
     minimum: round2(minimum), appliedMinimum,
-    amount: round2(appliedMinimum ? minimum : byYears)
+    amount: round2(appliedMinimum ? minimum : total)
   };
 }
 
@@ -97,6 +122,7 @@ function dismissalCalc() {
 /* 6. PRESTACIÓN POR RENUNCIA VOLUNTARIA (Ley de renuncia, Art. 8)
    Tope de la base = 2 × salario mínimo diario × 30
    Prestación      = base ÷ 30 × 15 días × años de servicio
+                     (la fracción de año se toma en días comerciales ÷ 360)
    Requisitos      = al menos 2 años de servicio y preaviso escrito de 15 días */
 function resignationCalc() {
   const salary = monthlySalary();
@@ -121,22 +147,25 @@ function resignationCalc() {
 
 /* 7. VACACIONES (Arts. 177 y 187)
    Vacación completa     = salario diario × 15 días × 1.30   (30% de recargo)
-   Vacación proporcional = vacación completa × días trabajados del período en curso ÷ 365
+   Vacación proporcional = (vacación completa × meses trabajados) ÷ 12
+                           Los días sueltos cuentan como fracción de mes: meses + días ÷ 30.
    No se acumulan: solo se suma el período anterior si su pago quedó pendiente. */
 function vacationCalc() {
   const daily = dailySalary();
   const full = daily * 15 * 1.30;
   const service = serviceYears();
   const periodStart = service.full >= 1 ? service.anniversary : data.start;
-  const periodDays = inclusiveDays(periodStart, data.end);
-  const proportional = full * Math.min(periodDays, DAYS_PER_YEAR) / DAYS_PER_YEAR;
+  const period = commercialPeriod(periodStart, data.end);
+  const months = Math.min(12, period.years * 12 + period.months + period.days / DAYS_PER_MONTH);
+  const periodDays = Math.min(DAYS_PER_YEAR, period.days360);
+  const proportional = full * months / 12;
 
   let previous = 0;
   if (data.vacation === 'si' && service.full >= 1) {
     if (data.vacationPayment === 'pendiente') previous = full;
     else if (data.vacationPayment === 'parcial') previous = Math.max(0, full - (Number(data.vacationPaidAmount) || 0));
   }
-  return { daily, full: round2(full), periodStart, periodDays, proportional: round2(proportional), previous: round2(previous), years: service.full };
+  return { daily, full: round2(full), periodStart, period, months, periodDays, proportional: round2(proportional), previous: round2(previous), years: service.full };
 }
 
 
@@ -145,7 +174,9 @@ function vacationCalc() {
                           3 a menos de 10 años → 19 días
                           10 años o más        → 21 días
    Aguinaldo completo     = salario ÷ 30 × días del tramo
-   Aguinaldo proporcional = aguinaldo completo × días trabajados del ciclo ÷ 365
+   Aguinaldo proporcional = (aguinaldo completo ÷ 360) × días comerciales trabajados
+                            desde el 12 de diciembre anterior (meses × 30 + días)
+   Ejemplo del material: $380 ÷ 360 = $1.055; × 289 días = $304.90.
    Es completo si la relación termina desde el 1 de octubre (o el 12 de diciembre)
    con al menos 1 año de servicio. El 30 de septiembre o antes es proporcional. */
 function bonusEstimate() {
@@ -167,7 +198,8 @@ function bonusEstimate() {
   const from = start > cycleStart ? start : cycleStart;
   const to = end < cycleEnd ? end : cycleEnd;
   const cycleDays = DAYS_PER_YEAR;
-  const workedDays = Math.max(0, Math.round((to - from) / DAY) + 1);
+  const workedPeriod = commercialPeriod(from.toISOString().slice(0, 10), to.toISOString().slice(0, 10));
+  const workedDays = Math.min(DAYS_PER_YEAR, workedPeriod.days360);
 
   const inPaymentWindow = end >= dateValue(windowStart);
   const hasYear = completedYears(start, end) >= 1;
@@ -185,7 +217,7 @@ function bonusEstimate() {
       : `La terminación es antes del ${dateLabel(windowStart)}: corresponde la parte proporcional del ciclo anual.`;
 
   return {
-    valid: true, year, reference: reference.toISOString().slice(0, 10), windowStart, cycleDays, workedDays,
+    valid: true, year, reference: reference.toISOString().slice(0, 10), windowStart, cycleDays, workedDays, workedPeriod,
     from: from.toISOString().slice(0, 10), to: to.toISOString().slice(0, 10),
     years, salaryDays, annualAmount, full, label, reason, amount, paid, pending
   };
